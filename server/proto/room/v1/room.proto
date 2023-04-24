@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto.room.v1;
+
+option go_package = "gilwong00/connect-chat/gen/proto/room/v1;roomv1";
+
+service RoomService {
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse) {}
+}
+
+
+message CreateRoomRequest {
+	string name = 1;
+}
+
+message CreateRoomResponse {
+	string id = 1;
+}

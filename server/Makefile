@@ -1,6 +1,9 @@
 sqlc:
 	sqlc generate
 
+generate:
+	buf generate
+
 migrate-create:
 	migrate create -ext sql -dir pkg/db/migrations
 
