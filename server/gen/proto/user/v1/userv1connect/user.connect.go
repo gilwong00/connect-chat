@@ -7,7 +7,7 @@ package userv1connect
 import (
 	context "context"
 	errors "errors"
-	v1 "gen/user/v1"
+	v1 "gilwong00/connect-chat/gen/proto/user/v1"
 	connect_go "github.com/bufbuild/connect-go"
 	http "net/http"
 	strings "strings"
