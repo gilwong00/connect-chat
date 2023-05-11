@@ -38,9 +38,11 @@ func (s *userService) CreateUser(
 		return nil, err
 	}
 	return connect.NewResponse(&userv1.CreateUserResponse{
-		Id:       newUser.ID,
-		Username: newUser.Username,
-		Email:    newUser.Email,
+		User: &userv1.User{
+			Id:       newUser.ID,
+			Username: newUser.Username,
+			Email:    newUser.Email,
+		},
 	}), nil
 }
 

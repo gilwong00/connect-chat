@@ -35,14 +35,21 @@ const (
 const (
 	// UserServiceGetUserProcedure is the fully-qualified name of the UserService's GetUser RPC.
 	UserServiceGetUserProcedure = "/proto.user.v1.UserService/GetUser"
+	// UserServiceGetUserByEmailProcedure is the fully-qualified name of the UserService's
+	// GetUserByEmail RPC.
+	UserServiceGetUserByEmailProcedure = "/proto.user.v1.UserService/GetUserByEmail"
 	// UserServiceCreateUserProcedure is the fully-qualified name of the UserService's CreateUser RPC.
 	UserServiceCreateUserProcedure = "/proto.user.v1.UserService/CreateUser"
+	// UserServiceLoginProcedure is the fully-qualified name of the UserService's Login RPC.
+	UserServiceLoginProcedure = "/proto.user.v1.UserService/Login"
 )
 
 // UserServiceClient is a client for the proto.user.v1.UserService service.
 type UserServiceClient interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
+	GetUserByEmail(context.Context, *connect_go.Request[v1.GetUserByEmailRequest]) (*connect_go.Response[v1.GetUserByEmailResponse], error)
 	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
+	Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the proto.user.v1.UserService service. By default,
@@ -60,9 +67,19 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+UserServiceGetUserProcedure,
 			opts...,
 		),
+		getUserByEmail: connect_go.NewClient[v1.GetUserByEmailRequest, v1.GetUserByEmailResponse](
+			httpClient,
+			baseURL+UserServiceGetUserByEmailProcedure,
+			opts...,
+		),
 		createUser: connect_go.NewClient[v1.CreateUserRequest, v1.CreateUserResponse](
 			httpClient,
 			baseURL+UserServiceCreateUserProcedure,
+			opts...,
+		),
+		login: connect_go.NewClient[v1.LoginRequest, v1.LoginResponse](
+			httpClient,
+			baseURL+UserServiceLoginProcedure,
 			opts...,
 		),
 	}
@@ -70,8 +87,10 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	getUser    *connect_go.Client[v1.GetUserRequest, v1.GetUserResponse]
-	createUser *connect_go.Client[v1.CreateUserRequest, v1.CreateUserResponse]
+	getUser        *connect_go.Client[v1.GetUserRequest, v1.GetUserResponse]
+	getUserByEmail *connect_go.Client[v1.GetUserByEmailRequest, v1.GetUserByEmailResponse]
+	createUser     *connect_go.Client[v1.CreateUserRequest, v1.CreateUserResponse]
+	login          *connect_go.Client[v1.LoginRequest, v1.LoginResponse]
 }
 
 // GetUser calls proto.user.v1.UserService.GetUser.
@@ -79,15 +98,27 @@ func (c *userServiceClient) GetUser(ctx context.Context, req *connect_go.Request
 	return c.getUser.CallUnary(ctx, req)
 }
 
+// GetUserByEmail calls proto.user.v1.UserService.GetUserByEmail.
+func (c *userServiceClient) GetUserByEmail(ctx context.Context, req *connect_go.Request[v1.GetUserByEmailRequest]) (*connect_go.Response[v1.GetUserByEmailResponse], error) {
+	return c.getUserByEmail.CallUnary(ctx, req)
+}
+
 // CreateUser calls proto.user.v1.UserService.CreateUser.
 func (c *userServiceClient) CreateUser(ctx context.Context, req *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error) {
 	return c.createUser.CallUnary(ctx, req)
 }
 
+// Login calls proto.user.v1.UserService.Login.
+func (c *userServiceClient) Login(ctx context.Context, req *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error) {
+	return c.login.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the proto.user.v1.UserService service.
 type UserServiceHandler interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
+	GetUserByEmail(context.Context, *connect_go.Request[v1.GetUserByEmailRequest]) (*connect_go.Response[v1.GetUserByEmailResponse], error)
 	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
+	Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -102,9 +133,19 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOpt
 		svc.GetUser,
 		opts...,
 	))
+	mux.Handle(UserServiceGetUserByEmailProcedure, connect_go.NewUnaryHandler(
+		UserServiceGetUserByEmailProcedure,
+		svc.GetUserByEmail,
+		opts...,
+	))
 	mux.Handle(UserServiceCreateUserProcedure, connect_go.NewUnaryHandler(
 		UserServiceCreateUserProcedure,
 		svc.CreateUser,
+		opts...,
+	))
+	mux.Handle(UserServiceLoginProcedure, connect_go.NewUnaryHandler(
+		UserServiceLoginProcedure,
+		svc.Login,
 		opts...,
 	))
 	return "/proto.user.v1.UserService/", mux
@@ -117,6 +158,14 @@ func (UnimplementedUserServiceHandler) GetUser(context.Context, *connect_go.Requ
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.GetUser is not implemented"))
 }
 
+func (UnimplementedUserServiceHandler) GetUserByEmail(context.Context, *connect_go.Request[v1.GetUserByEmailRequest]) (*connect_go.Response[v1.GetUserByEmailResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.GetUserByEmail is not implemented"))
+}
+
 func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.CreateUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.Login is not implemented"))
 }

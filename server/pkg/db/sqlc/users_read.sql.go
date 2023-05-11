@@ -42,3 +42,41 @@ func (q *Queries) GetAllUser(ctx context.Context) ([]User, error) {
 	}
 	return items, nil
 }
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, email, password, created_at, updated_at FROM users
+WHERE email = $1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, email, password, created_at, updated_at FROM users
+WHERE username = $1
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
