@@ -35,11 +35,14 @@ const (
 const (
 	// UserServiceGetUserProcedure is the fully-qualified name of the UserService's GetUser RPC.
 	UserServiceGetUserProcedure = "/proto.user.v1.UserService/GetUser"
+	// UserServiceCreateUserProcedure is the fully-qualified name of the UserService's CreateUser RPC.
+	UserServiceCreateUserProcedure = "/proto.user.v1.UserService/CreateUser"
 )
 
 // UserServiceClient is a client for the proto.user.v1.UserService service.
 type UserServiceClient interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
+	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the proto.user.v1.UserService service. By default,
@@ -57,12 +60,18 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+UserServiceGetUserProcedure,
 			opts...,
 		),
+		createUser: connect_go.NewClient[v1.CreateUserRequest, v1.CreateUserResponse](
+			httpClient,
+			baseURL+UserServiceCreateUserProcedure,
+			opts...,
+		),
 	}
 }
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	getUser *connect_go.Client[v1.GetUserRequest, v1.GetUserResponse]
+	getUser    *connect_go.Client[v1.GetUserRequest, v1.GetUserResponse]
+	createUser *connect_go.Client[v1.CreateUserRequest, v1.CreateUserResponse]
 }
 
 // GetUser calls proto.user.v1.UserService.GetUser.
@@ -70,9 +79,15 @@ func (c *userServiceClient) GetUser(ctx context.Context, req *connect_go.Request
 	return c.getUser.CallUnary(ctx, req)
 }
 
+// CreateUser calls proto.user.v1.UserService.CreateUser.
+func (c *userServiceClient) CreateUser(ctx context.Context, req *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error) {
+	return c.createUser.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the proto.user.v1.UserService service.
 type UserServiceHandler interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
+	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -87,6 +102,11 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOpt
 		svc.GetUser,
 		opts...,
 	))
+	mux.Handle(UserServiceCreateUserProcedure, connect_go.NewUnaryHandler(
+		UserServiceCreateUserProcedure,
+		svc.CreateUser,
+		opts...,
+	))
 	return "/proto.user.v1.UserService/", mux
 }
 
@@ -95,4 +115,8 @@ type UnimplementedUserServiceHandler struct{}
 
 func (UnimplementedUserServiceHandler) GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.GetUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.CreateUser is not implemented"))
 }

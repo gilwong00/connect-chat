@@ -1,0 +1,2 @@
+docker kill connect_chat_pg
+docker container rm connect_chat_pg
