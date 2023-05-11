@@ -14,5 +14,6 @@ message CreateRoomRequest {
 }
 
 message CreateRoomResponse {
-	string id = 1;
+	string room_id = 1;
+	string name = 2;
 }

@@ -7,6 +7,7 @@ import (
 	"gilwong00/connect-chat/internal/roomservice"
 	"gilwong00/connect-chat/internal/userservice"
 	db "gilwong00/connect-chat/pkg/db/sqlc"
+	"gilwong00/connect-chat/pkg/ws"
 	"log"
 	"os"
 
@@ -26,17 +27,19 @@ func main() {
 		os.Exit(1)
 	}
 	conn, err := sql.Open(os.Getenv("DB_DRIVER"), os.Getenv("DB_SOURCE"))
-	queries := db.New(conn)
 	if err != nil {
 		log.Fatal("failed to connect to postgres", err)
 		os.Exit(1)
 	}
 	mux := http.NewServeMux()
+	queries := db.New(conn)
+	hub := ws.NewHub()
+	hubHandler := ws.NewHubHandler(hub)
 	userservice, err := userservice.NewUserService(queries)
 	if err != nil {
 		log.Fatalln("failed to create user service")
 	}
-	roomservice, err := roomservice.NewRoomService(queries)
+	roomservice, err := roomservice.NewRoomService(queries, hubHandler)
 	if err != nil {
 		log.Fatalln("failed to create room service")
 	}
@@ -44,6 +47,8 @@ func main() {
 	roomPath, roomHandler := roomv1connect.NewRoomServiceHandler(roomservice)
 	mux.Handle(userPath, userHandler)
 	mux.Handle(roomPath, roomHandler)
+	// websocket only path
+	mux.Handle("/room/join/", hubHandler)
 	err = http.ListenAndServe(
 		"localhost:8080",
 		h2c.NewHandler(mux, &http2.Server{}),
