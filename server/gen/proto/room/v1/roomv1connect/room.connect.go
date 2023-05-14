@@ -35,11 +35,18 @@ const (
 const (
 	// RoomServiceCreateRoomProcedure is the fully-qualified name of the RoomService's CreateRoom RPC.
 	RoomServiceCreateRoomProcedure = "/proto.room.v1.RoomService/CreateRoom"
+	// RoomServiceGetAllRoomsProcedure is the fully-qualified name of the RoomService's GetAllRooms RPC.
+	RoomServiceGetAllRoomsProcedure = "/proto.room.v1.RoomService/GetAllRooms"
+	// RoomServiceGetRoomMembersProcedure is the fully-qualified name of the RoomService's
+	// GetRoomMembers RPC.
+	RoomServiceGetRoomMembersProcedure = "/proto.room.v1.RoomService/GetRoomMembers"
 )
 
 // RoomServiceClient is a client for the proto.room.v1.RoomService service.
 type RoomServiceClient interface {
 	CreateRoom(context.Context, *connect_go.Request[v1.CreateRoomRequest]) (*connect_go.Response[v1.CreateRoomResponse], error)
+	GetAllRooms(context.Context, *connect_go.Request[v1.GetAllRoomsRequest]) (*connect_go.Response[v1.GetAllRoomsResponse], error)
+	GetRoomMembers(context.Context, *connect_go.Request[v1.GetRoomMembersRequest]) (*connect_go.Response[v1.GetRoomsMemberResponse], error)
 }
 
 // NewRoomServiceClient constructs a client for the proto.room.v1.RoomService service. By default,
@@ -57,12 +64,24 @@ func NewRoomServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+RoomServiceCreateRoomProcedure,
 			opts...,
 		),
+		getAllRooms: connect_go.NewClient[v1.GetAllRoomsRequest, v1.GetAllRoomsResponse](
+			httpClient,
+			baseURL+RoomServiceGetAllRoomsProcedure,
+			opts...,
+		),
+		getRoomMembers: connect_go.NewClient[v1.GetRoomMembersRequest, v1.GetRoomsMemberResponse](
+			httpClient,
+			baseURL+RoomServiceGetRoomMembersProcedure,
+			opts...,
+		),
 	}
 }
 
 // roomServiceClient implements RoomServiceClient.
 type roomServiceClient struct {
-	createRoom *connect_go.Client[v1.CreateRoomRequest, v1.CreateRoomResponse]
+	createRoom     *connect_go.Client[v1.CreateRoomRequest, v1.CreateRoomResponse]
+	getAllRooms    *connect_go.Client[v1.GetAllRoomsRequest, v1.GetAllRoomsResponse]
+	getRoomMembers *connect_go.Client[v1.GetRoomMembersRequest, v1.GetRoomsMemberResponse]
 }
 
 // CreateRoom calls proto.room.v1.RoomService.CreateRoom.
@@ -70,9 +89,21 @@ func (c *roomServiceClient) CreateRoom(ctx context.Context, req *connect_go.Requ
 	return c.createRoom.CallUnary(ctx, req)
 }
 
+// GetAllRooms calls proto.room.v1.RoomService.GetAllRooms.
+func (c *roomServiceClient) GetAllRooms(ctx context.Context, req *connect_go.Request[v1.GetAllRoomsRequest]) (*connect_go.Response[v1.GetAllRoomsResponse], error) {
+	return c.getAllRooms.CallUnary(ctx, req)
+}
+
+// GetRoomMembers calls proto.room.v1.RoomService.GetRoomMembers.
+func (c *roomServiceClient) GetRoomMembers(ctx context.Context, req *connect_go.Request[v1.GetRoomMembersRequest]) (*connect_go.Response[v1.GetRoomsMemberResponse], error) {
+	return c.getRoomMembers.CallUnary(ctx, req)
+}
+
 // RoomServiceHandler is an implementation of the proto.room.v1.RoomService service.
 type RoomServiceHandler interface {
 	CreateRoom(context.Context, *connect_go.Request[v1.CreateRoomRequest]) (*connect_go.Response[v1.CreateRoomResponse], error)
+	GetAllRooms(context.Context, *connect_go.Request[v1.GetAllRoomsRequest]) (*connect_go.Response[v1.GetAllRoomsResponse], error)
+	GetRoomMembers(context.Context, *connect_go.Request[v1.GetRoomMembersRequest]) (*connect_go.Response[v1.GetRoomsMemberResponse], error)
 }
 
 // NewRoomServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -87,6 +118,16 @@ func NewRoomServiceHandler(svc RoomServiceHandler, opts ...connect_go.HandlerOpt
 		svc.CreateRoom,
 		opts...,
 	))
+	mux.Handle(RoomServiceGetAllRoomsProcedure, connect_go.NewUnaryHandler(
+		RoomServiceGetAllRoomsProcedure,
+		svc.GetAllRooms,
+		opts...,
+	))
+	mux.Handle(RoomServiceGetRoomMembersProcedure, connect_go.NewUnaryHandler(
+		RoomServiceGetRoomMembersProcedure,
+		svc.GetRoomMembers,
+		opts...,
+	))
 	return "/proto.room.v1.RoomService/", mux
 }
 
@@ -95,4 +136,12 @@ type UnimplementedRoomServiceHandler struct{}
 
 func (UnimplementedRoomServiceHandler) CreateRoom(context.Context, *connect_go.Request[v1.CreateRoomRequest]) (*connect_go.Response[v1.CreateRoomResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.room.v1.RoomService.CreateRoom is not implemented"))
+}
+
+func (UnimplementedRoomServiceHandler) GetAllRooms(context.Context, *connect_go.Request[v1.GetAllRoomsRequest]) (*connect_go.Response[v1.GetAllRoomsResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.room.v1.RoomService.GetAllRooms is not implemented"))
+}
+
+func (UnimplementedRoomServiceHandler) GetRoomMembers(context.Context, *connect_go.Request[v1.GetRoomMembersRequest]) (*connect_go.Response[v1.GetRoomsMemberResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.room.v1.RoomService.GetRoomMembers is not implemented"))
 }

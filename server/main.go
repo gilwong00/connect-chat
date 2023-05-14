@@ -48,7 +48,9 @@ func main() {
 	mux.Handle(userPath, userHandler)
 	mux.Handle(roomPath, roomHandler)
 	// websocket only path
-	mux.Handle("/room/join/", hubHandler)
+	mux.Handle("/room/join", hubHandler)
+	// calling the Run method in our Hub on a separate go routine
+	go hub.Run()
 	err = http.ListenAndServe(
 		"localhost:8080",
 		h2c.NewHandler(mux, &http2.Server{}),

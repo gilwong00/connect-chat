@@ -5,9 +5,20 @@ package proto.room.v1;
 option go_package = "gilwong00/connect-chat/gen/proto/room/v1;roomv1";
 
 service RoomService {
-  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse) {}
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+	rpc GetAllRooms(GetAllRoomsRequest) returns(GetAllRoomsResponse);
+	rpc GetRoomMembers(GetRoomMembersRequest) returns(GetRoomsMemberResponse);
 }
 
+message Room {
+	string room_id = 1;
+	string room_name = 2;
+}
+
+message Member {
+	string member_id = 1;
+	string member_name = 2;
+}
 
 message CreateRoomRequest {
 	string name = 1;
@@ -16,4 +27,18 @@ message CreateRoomRequest {
 message CreateRoomResponse {
 	string room_id = 1;
 	string name = 2;
+}
+
+message GetAllRoomsRequest {}
+
+message GetAllRoomsResponse {
+	repeated Room rooms = 1;
+}
+
+message GetRoomMembersRequest {
+	string room_id = 1;
+}
+
+message GetRoomsMemberResponse {
+	repeated Member Member = 1;
 }
