@@ -9,6 +9,7 @@ import (
 	"gilwong00/connect-chat/internal/roomservice"
 	"gilwong00/connect-chat/internal/userservice"
 	db "gilwong00/connect-chat/pkg/db/sqlc"
+	"gilwong00/connect-chat/pkg/interceptors"
 	"gilwong00/connect-chat/pkg/ws"
 	"log"
 	"os"
@@ -18,6 +19,7 @@ import (
 
 	"net/http"
 
+	"github.com/bufbuild/connect-go"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 	"golang.org/x/net/http2"
@@ -88,7 +90,10 @@ func main() {
 		log.Fatalln("failed to create room service")
 	}
 	userPath, userHandler := userv1connect.NewUserServiceHandler(userservice)
-	roomPath, roomHandler := roomv1connect.NewRoomServiceHandler(roomservice)
+	roomPath, roomHandler := roomv1connect.NewRoomServiceHandler(
+		roomservice,
+		connect.WithInterceptors(interceptors.NewAuthInterceptor()),
+	)
 	mux.Handle(userPath, userHandler)
 	mux.Handle(roomPath, roomHandler)
 	// websocket only path
