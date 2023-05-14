@@ -36,6 +36,14 @@ func (h *HubHandler) AppendNewRoom(roomID string, roomName string) {
 	}
 }
 
+func (h *HubHandler) GetAllRooms() map[string]*Room {
+	return h.hub.Rooms
+}
+
+func (h *HubHandler) GetClientsFromRoom(roomId string) map[string]*Client {
+	return h.hub.Rooms[roomId].Clients
+}
+
 func (h *HubHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.Contains(r.URL.Path, "/room/join") {
 		h.joinRoom(w, r)

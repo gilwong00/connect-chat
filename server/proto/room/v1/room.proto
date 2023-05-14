@@ -40,5 +40,5 @@ message GetRoomMembersRequest {
 }
 
 message GetRoomsMemberResponse {
-	repeated Member Member = 1;
+	repeated Member Members = 1;
 }
