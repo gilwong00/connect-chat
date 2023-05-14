@@ -1,12 +1,14 @@
 package ws
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/websocket"
 )
 
+// TODO: look into service to client streaming from connect
 type HubHandler struct {
 	hub *Hub
 }
@@ -37,6 +39,7 @@ func (h *HubHandler) AppendNewRoom(roomID string, roomName string) {
 }
 
 func (h *HubHandler) GetAllRooms() map[string]*Room {
+	fmt.Println(">>>> rooms", h.hub.Rooms)
 	return h.hub.Rooms
 }
 
@@ -58,8 +61,11 @@ func (h *HubHandler) joinRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	roomID := r.URL.Query().Get("roomId")
+	fmt.Println(">>> roomId", roomID)
 	clientId := r.URL.Query().Get("clientId")
+	fmt.Println(">>> clientId", clientId)
 	username := r.URL.Query().Get("username")
+	fmt.Println(">>> username", username)
 	client := &Client{
 		Conn: conn,
 		//buffer channel
