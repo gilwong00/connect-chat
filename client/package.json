@@ -29,6 +29,7 @@
 	"type": "module",
 	"dependencies": {
 		"@bufbuild/connect": "^0.8.6",
-		"@bufbuild/protobuf": "^1.2.0"
+		"@bufbuild/protobuf": "^1.2.0",
+		"svelte-cookie": "^1.0.1"
 	}
 }

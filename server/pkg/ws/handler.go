@@ -39,7 +39,6 @@ func (h *HubHandler) AppendNewRoom(roomID string, roomName string) {
 }
 
 func (h *HubHandler) GetAllRooms() map[string]*Room {
-	fmt.Println(">>>> rooms", h.hub.Rooms)
 	return h.hub.Rooms
 }
 
