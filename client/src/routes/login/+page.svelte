@@ -1,13 +1,13 @@
 <script lang="ts">
   import { userClient } from '../../clients';
   import { setCookie } from 'svelte-cookie';
-  import type { LoginRequest, User } from '../../gen/proto/user_pb';
+  import type { LoginRequest, LoginResponse } from '../../gen/proto/user_pb';
   import { userStore } from '../../store';
   import { goto } from '$app/navigation';
+  import AuthForm from '../../components/AuthForm.svelte';
+  import type { ConnectError } from '@bufbuild/connect';
+  import { promiseHandler } from '../../utils';
 
-  type LoginFormFields = 'username' | 'email' | 'password';
-
-  let errors: Record<LoginFormFields, string> = {};
   let loginPayload: Partial<LoginRequest> = {};
 
   const handleLogin = async (e: SubmitEvent) => {
@@ -29,10 +29,18 @@
       }
     }
 
-    const res = await userClient.login(loginPayload);
-    setCookie('token', res.accessToken, 1, true);
-    if (res.user) {
-      userStore.setUser(res.user);
+    // const res = await userClient.login(loginPayload);
+    const [res, err] = await promiseHandler<LoginResponse, ConnectError | null>(
+      userClient.login(loginPayload)
+    );
+
+    if (err !== null) {
+      // some error. maybe user a toaster
+    }
+
+    if (res !== null) {
+      setCookie('token', res.accessToken, 1, true);
+      if (res.user) userStore.setUser(res.user);
       // redirect to home
       goto('/home');
     } else {
@@ -46,52 +54,4 @@
   <meta name="description" content="Login for connect chat" />
 </svelte:head>
 
-<div class="login-container">
-  <h3>Let's Connect!</h3>
-  <form class="login-form-container" on:submit|preventDefault={handleLogin}>
-    <input name="username" type="text" placeholder="Username or Email" />
-    <input name="password" type="password" placeholder="Password" />
-    <button>Login</button>
-  </form>
-  <a class="signup-link" href="signup">Don't have an account? Sign up</a>
-</div>
-
-<style lang="scss">
-  .login-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: auto 0;
-
-    @media (max-width: 500px) {
-      margin: initial;
-    }
-  }
-
-  .login-form-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 180px;
-
-    > input {
-      padding: 10px;
-      width: 350px;
-      border: 1px solid lightgrey;
-      border-radius: 4px;
-    }
-
-    > button {
-      padding: 12px 10px;
-      background: purple;
-      color: #fff;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-    }
-  }
-
-  .signup-link {
-    margin-top: 10px;
-  }
-</style>
+<AuthForm mode="login" handleSubmit={handleLogin} />

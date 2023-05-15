@@ -42,6 +42,8 @@ const (
 	UserServiceCreateUserProcedure = "/proto.user.v1.UserService/CreateUser"
 	// UserServiceLoginProcedure is the fully-qualified name of the UserService's Login RPC.
 	UserServiceLoginProcedure = "/proto.user.v1.UserService/Login"
+	// UserServiceWhoAmIProcedure is the fully-qualified name of the UserService's WhoAmI RPC.
+	UserServiceWhoAmIProcedure = "/proto.user.v1.UserService/WhoAmI"
 )
 
 // UserServiceClient is a client for the proto.user.v1.UserService service.
@@ -50,6 +52,7 @@ type UserServiceClient interface {
 	GetUserByEmail(context.Context, *connect_go.Request[v1.GetUserByEmailRequest]) (*connect_go.Response[v1.GetUserByEmailResponse], error)
 	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
 	Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error)
+	WhoAmI(context.Context, *connect_go.Request[v1.WhoAmIRequest]) (*connect_go.Response[v1.WhoAmIReponse], error)
 }
 
 // NewUserServiceClient constructs a client for the proto.user.v1.UserService service. By default,
@@ -82,6 +85,11 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 			baseURL+UserServiceLoginProcedure,
 			opts...,
 		),
+		whoAmI: connect_go.NewClient[v1.WhoAmIRequest, v1.WhoAmIReponse](
+			httpClient,
+			baseURL+UserServiceWhoAmIProcedure,
+			opts...,
+		),
 	}
 }
 
@@ -91,6 +99,7 @@ type userServiceClient struct {
 	getUserByEmail *connect_go.Client[v1.GetUserByEmailRequest, v1.GetUserByEmailResponse]
 	createUser     *connect_go.Client[v1.CreateUserRequest, v1.CreateUserResponse]
 	login          *connect_go.Client[v1.LoginRequest, v1.LoginResponse]
+	whoAmI         *connect_go.Client[v1.WhoAmIRequest, v1.WhoAmIReponse]
 }
 
 // GetUser calls proto.user.v1.UserService.GetUser.
@@ -113,12 +122,18 @@ func (c *userServiceClient) Login(ctx context.Context, req *connect_go.Request[v
 	return c.login.CallUnary(ctx, req)
 }
 
+// WhoAmI calls proto.user.v1.UserService.WhoAmI.
+func (c *userServiceClient) WhoAmI(ctx context.Context, req *connect_go.Request[v1.WhoAmIRequest]) (*connect_go.Response[v1.WhoAmIReponse], error) {
+	return c.whoAmI.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the proto.user.v1.UserService service.
 type UserServiceHandler interface {
 	GetUser(context.Context, *connect_go.Request[v1.GetUserRequest]) (*connect_go.Response[v1.GetUserResponse], error)
 	GetUserByEmail(context.Context, *connect_go.Request[v1.GetUserByEmailRequest]) (*connect_go.Response[v1.GetUserByEmailResponse], error)
 	CreateUser(context.Context, *connect_go.Request[v1.CreateUserRequest]) (*connect_go.Response[v1.CreateUserResponse], error)
 	Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error)
+	WhoAmI(context.Context, *connect_go.Request[v1.WhoAmIRequest]) (*connect_go.Response[v1.WhoAmIReponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -148,6 +163,11 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOpt
 		svc.Login,
 		opts...,
 	))
+	mux.Handle(UserServiceWhoAmIProcedure, connect_go.NewUnaryHandler(
+		UserServiceWhoAmIProcedure,
+		svc.WhoAmI,
+		opts...,
+	))
 	return "/proto.user.v1.UserService/", mux
 }
 
@@ -168,4 +188,8 @@ func (UnimplementedUserServiceHandler) CreateUser(context.Context, *connect_go.R
 
 func (UnimplementedUserServiceHandler) Login(context.Context, *connect_go.Request[v1.LoginRequest]) (*connect_go.Response[v1.LoginResponse], error) {
 	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.Login is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) WhoAmI(context.Context, *connect_go.Request[v1.WhoAmIRequest]) (*connect_go.Response[v1.WhoAmIReponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("proto.user.v1.UserService.WhoAmI is not implemented"))
 }

@@ -3,14 +3,9 @@ package interceptors
 import (
 	"context"
 	"errors"
-	"strings"
+	"gilwong00/connect-chat/pkg/token"
 
 	"github.com/bufbuild/connect-go"
-	"github.com/golang-jwt/jwt/v4"
-)
-
-const (
-	secretKey = "secret"
 )
 
 func NewAuthInterceptor() connect.UnaryInterceptorFunc {
@@ -19,23 +14,11 @@ func NewAuthInterceptor() connect.UnaryInterceptorFunc {
 			ctx context.Context,
 			req connect.AnyRequest,
 		) (connect.AnyResponse, error) {
-			authHeader := req.Header().Get("authorization")
-			if !strings.Contains(authHeader, "Bearer") {
-				return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("missing auth header"))
+			authToken, err := token.GetAuthTokenFromHeader(req)
+			if err != nil {
+				return nil, connect.NewError(connect.CodeUnauthenticated, err)
 			}
-			tokenParts := strings.Split(authHeader, " ")
-			if len(tokenParts) == 1 {
-				return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("no auth token provided"))
-			}
-			authToken := tokenParts[1]
-			if authToken == "" {
-				return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("no auth token provided"))
-			}
-			claims := jwt.MapClaims{}
-			keyFunc := func(token *jwt.Token) (interface{}, error) {
-				return []byte(secretKey), nil
-			}
-			token, err := jwt.ParseWithClaims(authToken, claims, keyFunc)
+			token, err := token.ParseJwtToken(authToken)
 			if err != nil {
 				return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("error parsing token"))
 			}
