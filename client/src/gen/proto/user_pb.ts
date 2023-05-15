@@ -369,3 +369,71 @@ export class LoginResponse extends Message<LoginResponse> {
   }
 }
 
+/**
+ * @generated from message proto.user.v1.WhoAmIRequest
+ */
+export class WhoAmIRequest extends Message<WhoAmIRequest> {
+  constructor(data?: PartialMessage<WhoAmIRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "proto.user.v1.WhoAmIRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): WhoAmIRequest {
+    return new WhoAmIRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): WhoAmIRequest {
+    return new WhoAmIRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): WhoAmIRequest {
+    return new WhoAmIRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: WhoAmIRequest | PlainMessage<WhoAmIRequest> | undefined, b: WhoAmIRequest | PlainMessage<WhoAmIRequest> | undefined): boolean {
+    return proto3.util.equals(WhoAmIRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message proto.user.v1.WhoAmIReponse
+ */
+export class WhoAmIReponse extends Message<WhoAmIReponse> {
+  /**
+   * @generated from field: proto.user.v1.User user = 1;
+   */
+  user?: User;
+
+  constructor(data?: PartialMessage<WhoAmIReponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "proto.user.v1.WhoAmIReponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "user", kind: "message", T: User },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): WhoAmIReponse {
+    return new WhoAmIReponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): WhoAmIReponse {
+    return new WhoAmIReponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): WhoAmIReponse {
+    return new WhoAmIReponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: WhoAmIReponse | PlainMessage<WhoAmIReponse> | undefined, b: WhoAmIReponse | PlainMessage<WhoAmIReponse> | undefined): boolean {
+    return proto3.util.equals(WhoAmIReponse, a, b);
+  }
+}
+

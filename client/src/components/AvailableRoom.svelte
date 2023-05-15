@@ -1,21 +1,32 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+  import { BASE_URL, WEBSOCKET_URL } from '../clients';
   import { userStore } from '../store';
 
   export let roomName: string = '';
   export let roomId: string = '';
 
   const user = $userStore.user;
-  console.log(user);
 
   const joinRoom = async () => {
-    console.log('join click');
+    if (user) {
+      const ws = new WebSocket(
+        `${WEBSOCKET_URL}/room/join?roomId=${roomId}&clientId=${user.id}&username=${user.username}`
+      );
+      console.log('websocket', ws);
+      if (ws.OPEN) {
+        // do something
+        // save websocket connection in state
+        return goto(`/room/${roomId}`);
+      }
+    }
   };
 </script>
 
 <div class="room-item-container">
   <div class="room-details-container">
     <div class="room-details">
-      <label>Room</label>
+      <div>Room</div>
       <p>{roomName}</p>
     </div>
     <button on:click={joinRoom}>Join</button>

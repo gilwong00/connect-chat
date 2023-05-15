@@ -1,20 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { roomClient } from '../../clients';
+  import { roomClient, userClient } from '../../clients';
   import { getCookie } from 'svelte-cookie';
-  import { roomStore } from '../../store';
+  import { roomStore, userStore } from '../../store';
   import { goto } from '$app/navigation';
   import { promiseHandler } from '../../utils';
   import type { GetAllRoomsResponse } from '../../gen/proto/room_pb';
-  import type { ConnectError } from '@bufbuild/connect';
   import AvailableRoom from '../../components/AvailableRoom.svelte';
+  import type { User, WhoAmIReponse } from '../../gen/proto/user_pb';
+  import type { ConnectError } from '@bufbuild/connect';
 
   let fetchRoomsError: boolean = false;
+  const currentUser = $userStore.user;
 
-  onMount(async () => {
-    // fetch room if auth
-    const authToken = getCookie('token');
-    if (!authToken.length) return goto('/login');
+  const fetchActiveRooms = async (authToken: string) => {
     const [res, err] = await promiseHandler<
       GetAllRoomsResponse,
       ConnectError | null
@@ -33,6 +32,37 @@
     }
     if (res !== null) {
       roomStore.setRooms(res.rooms);
+    }
+  };
+
+  const fetchCurrenctUser = async (authToken: string): Promise<User | null> => {
+    const [res, err] = await promiseHandler<WhoAmIReponse, ConnectError | null>(
+      userClient.whoAmI(
+        {},
+        {
+          headers: {
+            Authorization: `Bearers ${authToken}`
+          }
+        }
+      )
+    );
+    if (err !== null) return null;
+    return res?.user ?? null;
+  };
+
+  onMount(async () => {
+    // fetch room if auth
+    const authToken = getCookie('token');
+    if (!authToken.length) return goto('/login');
+
+    if (!currentUser) {
+      const user = await fetchCurrenctUser(authToken);
+      if (user) {
+        userStore.setUser(user);
+        await fetchActiveRooms(authToken);
+      } else {
+        return goto('/login');
+      }
     }
   });
 </script>

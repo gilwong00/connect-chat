@@ -1,7 +1,6 @@
 package ws
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -60,11 +59,8 @@ func (h *HubHandler) joinRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	roomID := r.URL.Query().Get("roomId")
-	fmt.Println(">>> roomId", roomID)
 	clientId := r.URL.Query().Get("clientId")
-	fmt.Println(">>> clientId", clientId)
 	username := r.URL.Query().Get("username")
-	fmt.Println(">>> username", username)
 	client := &Client{
 		Conn: conn,
 		//buffer channel

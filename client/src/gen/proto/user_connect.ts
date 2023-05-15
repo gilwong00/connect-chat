@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateUserRequest, CreateUserResponse, GetUserByEmailRequest, GetUserByEmailResponse, GetUserRequest, GetUserResponse, LoginRequest, LoginResponse } from "./user_pb.js";
+import { CreateUserRequest, CreateUserResponse, GetUserByEmailRequest, GetUserByEmailResponse, GetUserRequest, GetUserResponse, LoginRequest, LoginResponse, WhoAmIReponse, WhoAmIRequest } from "./user_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -46,6 +46,15 @@ export const UserService = {
       name: "Login",
       I: LoginRequest,
       O: LoginResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc proto.user.v1.UserService.WhoAmI
+     */
+    whoAmI: {
+      name: "WhoAmI",
+      I: WhoAmIRequest,
+      O: WhoAmIReponse,
       kind: MethodKind.Unary,
     },
   }

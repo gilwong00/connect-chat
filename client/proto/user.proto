@@ -8,7 +8,8 @@ service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
 	rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
 	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
-	rpc Login(LoginRequest) returns(LoginResponse);
+	rpc Login(LoginRequest) returns (LoginResponse);
+	rpc WhoAmI(WhoAmIRequest) returns (WhoAmIReponse);
 }
 
 message User {
@@ -52,4 +53,10 @@ message LoginRequest {
 message LoginResponse {
 	string access_token = 1;
 	User user = 2;
+}
+
+message WhoAmIRequest {}
+
+message WhoAmIReponse {
+	User user = 1;
 }
