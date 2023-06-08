@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { BASE_URL, WEBSOCKET_URL } from '../clients';
+  import { WEBSOCKET_URL } from '../clients';
   import { userStore } from '../store';
 
   export let roomName: string = '';

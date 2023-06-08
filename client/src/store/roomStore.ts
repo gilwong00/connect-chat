@@ -17,7 +17,7 @@ export const roomStore = (() => {
     }));
   };
 
-  const addNewRoom = (room: Room) => {
+  const addNewRoom = (room: Pick<Room, 'roomId' | 'roomName'>) => {
     update(state => ({
       ...state,
       rooms: [...state.rooms, room]
