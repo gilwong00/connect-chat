@@ -1,10 +1,34 @@
 <script>
+  import '../app.css';
   import Header from './Header.svelte';
+  import {
+    Navbar,
+    NavBrand,
+    NavLi,
+    NavUl,
+    NavHamburger
+  } from 'flowbite-svelte';
+
   import './styles.css';
 </script>
 
 <div class="app">
-  <Header />
+  <!-- <Header /> -->
+  <Navbar let:hidden let:toggle>
+    <NavBrand href="/home">
+      <span
+        class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
+      >
+        Connect Chat
+      </span>
+    </NavBrand>
+    <NavHamburger on:click={toggle} />
+    <NavUl {hidden}>
+      <NavLi href="/login">Login</NavLi>
+      <NavLi href="/signup">Sign up</NavLi>
+      <!-- <NavLi href="/contact">Contact</NavLi> -->
+    </NavUl>
+  </Navbar>
   <main>
     <slot />
   </main>
