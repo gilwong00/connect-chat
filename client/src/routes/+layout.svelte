@@ -1,6 +1,6 @@
 <script>
   import '../app.css';
-  import Header from './Header.svelte';
+  import { browser } from '$app/environment';
   import {
     Navbar,
     NavBrand,
@@ -8,14 +8,20 @@
     NavUl,
     NavHamburger
   } from 'flowbite-svelte';
+  import { getCookie, deleteCookie } from 'svelte-cookie';
+  import { goto } from '$app/navigation';
 
-  import './styles.css';
+  $: authToken = browser ? getCookie('token') : '';
+
+  const handleLogout = () => {
+    deleteCookie('token');
+    goto('/login');
+  };
 </script>
 
 <div class="app">
-  <!-- <Header /> -->
-  <Navbar let:hidden let:toggle>
-    <NavBrand href="/home">
+  <Navbar let:hidden let:toggle rounded color="form">
+    <NavBrand href="/">
       <span
         class="self-center whitespace-nowrap text-xl font-semibold dark:text-white"
       >
@@ -24,9 +30,12 @@
     </NavBrand>
     <NavHamburger on:click={toggle} />
     <NavUl {hidden}>
-      <NavLi href="/login">Login</NavLi>
-      <NavLi href="/signup">Sign up</NavLi>
-      <!-- <NavLi href="/contact">Contact</NavLi> -->
+      {#if authToken.length === 0}
+        <NavLi href="/login">Login</NavLi>
+        <NavLi href="/signup">Sign up</NavLi>
+      {:else}
+        <NavLi on:click={handleLogout}>Logout</NavLi>
+      {/if}
     </NavUl>
   </Navbar>
   <main>
