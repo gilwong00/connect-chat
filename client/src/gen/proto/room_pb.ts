@@ -282,9 +282,9 @@ export class GetRoomMembersRequest extends Message<GetRoomMembersRequest> {
  */
 export class GetRoomsMemberResponse extends Message<GetRoomsMemberResponse> {
   /**
-   * @generated from field: repeated proto.room.v1.Member Members = 1;
+   * @generated from field: repeated proto.room.v1.Member members = 1;
    */
-  Members: Member[] = [];
+  members: Member[] = [];
 
   constructor(data?: PartialMessage<GetRoomsMemberResponse>) {
     super();
@@ -294,7 +294,7 @@ export class GetRoomsMemberResponse extends Message<GetRoomsMemberResponse> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "proto.room.v1.GetRoomsMemberResponse";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "Members", kind: "message", T: Member, repeated: true },
+    { no: 1, name: "members", kind: "message", T: Member, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetRoomsMemberResponse {

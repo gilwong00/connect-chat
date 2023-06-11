@@ -69,7 +69,6 @@
 
 <div class="home-container">
   <div class="home-header">
-    <h2>Connect Rooms</h2>
     <button class="create-room-btn" on:click={() => goto('/room/create')}
       >Create room</button
     >

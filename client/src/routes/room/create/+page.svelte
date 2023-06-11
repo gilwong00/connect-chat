@@ -7,12 +7,13 @@
   import { roomClient } from '../../../clients';
   import { roomStore } from '../../../store';
   import type { CreateRoomResponse, Room } from '../../../gen/proto/room_pb';
+  import { Card, Button, Input } from 'flowbite-svelte';
 
   let roomName: string = '';
 
   const authToken = browser ? getCookie('token') : null;
 
-  const returnHome = () => goto('/home');
+  const returnHome = () => goto('/');
 
   const handleNameChange = (e: Event) => {
     roomName = (e.target as HTMLInputElement).value;
@@ -45,61 +46,29 @@
 </script>
 
 <div class="create-room-container">
-  <h3>Create new room</h3>
-  <input
-    class="create-room-input"
-    placeholder="Room Name"
-    bind:value={roomName}
-    on:change={handleNameChange}
-  />
-  <div class="action-row">
-    <button class="cancel" on:click={returnHome}>Cancel</button>
-    <button on:click={handleCreateRoom}>Create</button>
-  </div>
+  <Card>
+    <h3 class="text-center">Create new room</h3>
+    <div class="my-6">
+      <Input
+        type="text"
+        name="new-room"
+        bind:value={roomName}
+        placeholder="Room name"
+        on:change={handleNameChange}
+        required
+      />
+    </div>
+    <Button class="mb-4" color="purple" on:click={handleCreateRoom}
+      >Create</Button
+    >
+    <Button color="red" on:click={returnHome}>Cancel</Button>
+  </Card>
 </div>
 
 <style lang="scss">
   .create-room-container {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    background: #fff;
+    margin: auto;
     width: 500px;
-    height: 150px;
-    margin: auto;
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 100px;
-    padding-bottom: 50px;
-  }
-
-  .create-room-input {
-    padding: 10px;
-    width: 350px;
-    border: 1px solid lightgrey;
-    border-radius: 4px;
-  }
-
-  .action-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 380px;
-    margin: auto;
-    margin-top: 20px;
-
-    > button {
-      padding: 10px 10px;
-      background: purple;
-      color: #fff;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      width: 120px;
-    }
-
-    .cancel {
-      background: red;
-    }
   }
 </style>

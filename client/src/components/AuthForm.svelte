@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AuthMode } from '../@types';
-  import { A, Button, Card, Label, Input } from 'flowbite-svelte';
+  import { Button, Card, Label, Input } from 'flowbite-svelte';
 
   export let mode: AuthMode;
   export let handleSubmit = (_: SubmitEvent) => {};
@@ -19,14 +19,14 @@
       {#if mode === 'signup'}
         <Label class="space-y-2">
           <span>Username</span>
-          <Input type="text" name="text" placeholder="Username" required />
+          <Input type="text" name="username" placeholder="Username" required />
         </Label>
       {:else if mode === 'login'}
         <Label class="space-y-2">
           <span>Username</span>
           <Input
             type="text"
-            name="text"
+            name="username"
             placeholder="Username or Email"
             required
           />
@@ -53,9 +53,9 @@
         />
       </Label>
       {#if mode === 'signup'}
-        <Button color="purple">Sign up</Button>
+        <Button type="submit" color="purple">Sign up</Button>
       {:else}
-        <Button color="purple">Login</Button>
+        <Button type="submit" color="purple">Login</Button>
       {/if}
     </form>
     {#if mode === 'login'}

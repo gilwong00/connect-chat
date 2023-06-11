@@ -42,7 +42,7 @@
       setCookie('token', res.accessToken, 1, true);
       if (res.user) userStore.setUser(res.user);
       // redirect to home
-      goto('/home');
+      goto('/');
     } else {
       // show some failure
     }

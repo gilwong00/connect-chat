@@ -6,7 +6,5 @@ services:
     container_name: connect_chat_pg
     env_file:
       - ./config/docker.env
-    environment:
-      - POSTGRES_PASSWORD=postgres
     ports:
       - '5432:5432'
