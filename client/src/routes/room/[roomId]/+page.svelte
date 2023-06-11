@@ -7,9 +7,22 @@
   import ChatInput from '../../../components/ChatInput.svelte';
   import { channelStore } from '../../../store/channelStore';
   import { goto } from '$app/navigation';
+  import { userStore } from '../../../store';
 
-  let roomMembers;
-  $: messages = [];
+  type MessageType = 'self' | 'receive';
+
+  type Message = {
+    content: string;
+    clientId: string;
+    username: string;
+    roomId: string;
+    type: MessageType;
+  };
+
+  const currentUser = $userStore.user;
+
+  $: messages = [] as Array<Message>;
+  $: roomMembers = [] as Array<{ username: string }>;
 
   const channel = $channelStore.channels[$page.params.roomId];
 
@@ -29,7 +42,9 @@
           }
         }
       );
-      roomMembers = res.members;
+      roomMembers = res.members.map(member => ({
+        usernanme: member.memberName
+      })) as unknown as Array<{ username: string }>;
     } catch (err) {
       // do something with error
       console.log(err);
@@ -37,7 +52,31 @@
     }
   });
 
-  channel.onmessage = (incomingMessage: unknown) => {};
+  channel.onmessage = (incomingMessage: MessageEvent) => {
+    const message: Message = JSON.parse(incomingMessage.data);
+    if (message.content === 'A new user has joined the room') {
+      // append user to chat room
+      roomMembers = [...roomMembers, { username: message.username }];
+    }
+
+    if (message.content === 'user left the chat') {
+      // remove user
+      const deleteUser = roomMembers.filter(
+        user => user.username !== message.username
+      );
+      roomMembers = [...deleteUser];
+      messages = [...messages, message];
+      return;
+    }
+
+    if (currentUser?.username === message.username) {
+      message.type = 'self';
+    }
+    message.type = 'receive';
+    messages = [...messages, message];
+    console.log('room mermbers', roomMembers);
+    console.log('messages', messages);
+  };
 
   const sendMessage = async (message: string) => {
     channel.send(message);
