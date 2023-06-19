@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { WEBSOCKET_URL } from '../clients';
   import { userStore } from '../store';
-  import { Card, Button, Input } from 'flowbite-svelte';
+  import { Card, Button } from 'flowbite-svelte';
   import { channelStore } from '../store/channelStore';
 
   export let roomName: string = '';
@@ -48,16 +48,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-
-    > button {
-      border-radius: 4px;
-      border: none;
-      background-color: purple;
-      color: #fff;
-      padding: 5px;
-      width: 60px;
-      cursor: pointer;
-    }
   }
 
   .room-details {
